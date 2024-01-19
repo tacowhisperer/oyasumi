@@ -3,9 +3,22 @@
 	<head>
 		<title>おやすみなさい〜〜〜</title>
 
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Montserrat:wght@400&display=swap" rel="stylesheet">
+
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
+
 		<style>
 			* {
 				box-sizing: border-box;
+
+				font-family: "Kosugi Maru", sans-serif;
+				font-weight: 400;
+				font-style: normal;
 			}
 
 			html, body {
@@ -22,7 +35,7 @@
 				height: 100%;
 				width: 100%;
 
-				background-color: lightcyan;
+				background-color: #0e0e0e;
 
 				display: flex;
 				flex-direction: column;
@@ -30,15 +43,50 @@
 				justify-content: center;
 				align-items: center;
 			}
+
+			#msg {
+				color: #f0f0f0;
+				font-size: 3em;
+			}
+
+			#nav {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				justify-content: center;
+				align-items: center;
+				column-gap: 1em;
+			}
+
+			button {
+				background-color: #555;
+				border-radius: 0.2em;
+				border: 0;
+				color: #f0f0f0;
+				font-family: 'Montserrat', sans-serif;
+				font-size: 1.5em;
+				padding: 0.25em 0.5em;
+				height: 1.75em;
+			}
+
+			button:hover {
+				background-color: #666;
+				cursor: pointer;
+			}
+
+			button:active {
+				background-color: #777;
+			}
 		</style>
 	</head>
 
 	<body>
 		<div id="oyasumi">
 			<p id="msg">おやすみなさい〜〜〜</p>
+
 			<div id="nav">
-				<button type="button">⟳</button>
-				<button type="button">Copy</button>
+				<button type="button" id="reset">⟳</button>
+				<button type="button" id="copy">Copy</button>
 			</div>
 		</div>
 	</body>
