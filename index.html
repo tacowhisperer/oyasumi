@@ -48,6 +48,7 @@
 			#msg {
 				color: #f0f0f0;
 				font-size: 3em;
+				text-align: center;
 			}
 
 			#nav {
@@ -56,7 +57,7 @@
 				flex-wrap: nowrap;
 				justify-content: center;
 				align-items: center;
-				column-gap: 1em;
+				column-gap: 1.5em;
 			}
 
 			button {
@@ -65,9 +66,9 @@
 				border: 0;
 				color: #f0f0f0;
 				font-family: 'Montserrat', sans-serif;
-				font-size: 1.5em;
-				padding: 0.25em 0.5em;
-				height: 1.75em;
+				font-size: 1.25em;
+				padding: 0.5em 1.2em;
+				height: 2.5em;
 			}
 
 			button:hover {
@@ -79,11 +80,80 @@
 				background-color: #777;
 			}
 		</style>
+
+		<script type="text/javascript">
+			window.addEventListener("load", main);
+
+			function randomInt(min, max) {
+				const r = Math.random();
+				return Math.floor((1 - r) * min + r * (max + 1));
+			}
+
+			function generateGoodNightMessage() {
+				const composition = [
+					() => "おやすみ", // head
+
+					() => {
+						return Math.random() < 0.5 ? "なさい" : "";
+					}, // suffix
+
+					() => {
+						return "〜".repeat(randomInt(1, 5));
+					}, // emotion
+
+					() => {
+						return "✨🚀👩‍🚀";
+					}, // main emoji
+
+					() => {
+						const genTrail = (em, min, max, rand = false) => {
+							let g = "";
+							em.forEach(emoji => g += emoji.repeat(rand === false ? randomInt(min, max) : rand));
+							return g;
+						}
+						let trailEmoji = ["🥰", "😘", "🐻🤗", ""];
+
+						let trail = "";
+						trail += genTrail(["🥰", "😘"], 3, 6);
+
+						let r = Math.random() > 0.25 ? randomInt(3, 5) : 0;
+						trail += genTrail(["🐻🤗"], 0, 4, r);
+						if (r > 0) {
+							trail += "🦴";
+							trail += genTrail(["💥"], 3, 5);
+						}
+
+						trail += genTrail(["🐯"], 0, 4);
+
+						return trail;
+					}, // trailing emojis
+
+					() => {
+						return "❤️🐥";
+					} // closing emojis
+				];
+
+				return composition.reduce((msg, gen) => msg += gen(), "");
+			}
+
+			function setGoodNightMessage(str, p) {
+				p.innerHTML = str;
+			}
+
+			function main() {
+				const msg = document.getElementById("msg");
+
+				setGoodNightMessage(generateGoodNightMessage(), msg);
+				document.getElementById("reset").addEventListener("click", () => 
+					setGoodNightMessage(generateGoodNightMessage(), msg)
+				);
+			}
+		</script>
 	</head>
 
 	<body>
 		<div id="oyasumi">
-			<p id="msg">おやすみなさい〜〜〜</p>
+			<p id="msg"></p>
 
 			<div id="nav">
 				<button type="button" id="reset">⟳</button>
