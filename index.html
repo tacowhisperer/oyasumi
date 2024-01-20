@@ -76,13 +76,15 @@
 
 			button {
 				background-color: #555;
-				border-radius: 0.25rem;
+				border-radius: 0.75rem;
 				border: 0;
 				color: #f0f0f0;
 				font-family: 'Montserrat', sans-serif;
 				font-size: 4em;
 				padding: 3rem 3rem;
 				line-height: 2.5rem;
+				user-select: none;
+				transition: transform 0.1s ease;
 			}
 
 			button:hover {
@@ -91,12 +93,56 @@
 			}
 
 			button:active {
-				background-color: #777;
+				transform: scale(1.05);
 			}
 		</style>
 
 		<script type="text/javascript">
 			window.addEventListener("load", main);
+
+			/* 
+			 * modified from http://www.voidware.com/moon_phase.htm
+			 * https://gist.github.com/endel/dfe6bb2fbe679781948c
+			 */
+			function getMoonPhase(year, month, day) {
+				var c = e = jd = b = 0;
+
+				if (month < 3) {
+					year--;
+					month += 12;
+				}
+
+				++month;
+
+				c = 365.25 * year;
+
+				e = 30.6 * month;
+
+				jd = c + e + day - 694039.09; //jd is total days elapsed
+
+				jd /= 29.5305882; //divide by the moon cycle
+
+				b = parseInt(jd); //int(jd) -> b, take integer part of jd
+
+				jd -= b; //subtract integer part to leave fractional part of original jd
+
+				b = Math.round(jd * 8); //scale fraction from 0-8 and round
+
+				if (b >= 8 ) {
+					b = 0; //0 and 8 are the same so turn 8 into 0
+				}
+
+				// 0 => New Moon
+				// 1 => Waxing Crescent Moon
+				// 2 => Quarter Moon
+				// 3 => Waxing Gibbous Moon
+				// 4 => Full Moon
+				// 5 => Waning Gibbous Moon
+				// 6 => Last Quarter Moon
+				// 7 => Waning Crescent Moon
+
+				return b;
+			}
 
 			function randomInt(min, max) {
 				const r = Math.random();
@@ -120,19 +166,39 @@
 					}, // main emoji
 
 					() => {
+						const time = new Date();
+						const year = time.getFullYear();
+						const month = time.getMonth() + 1;
+						const day = time.getDate();
+
+						const PHASE = getMoonPhase(year, month, day);
+						if (PHASE === 4)
+							return "✨🌕✨";
+
+						else if (Math.random() < 0.25)
+							return ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"][PHASE];
+
+						return "";
+					}, // moon phase emoji
+
+					() => {
+						return Math.random() < 0.05 ? "☄️" : "";
+					}, // special head emoji
+
+					() => {
 						const genTrail = (em, min, max, rand = false) => {
 							let g = "";
 							em.forEach(emoji => g += emoji.repeat(rand === false ? randomInt(min, max) : rand));
 							return g;
 						}
-						let trailEmoji = ["🥰", "😘", "🐻🤗"];
 
 						let trail = "";
-						trail += genTrail(["🥰", "😘"], 3, 6);
+						trail += genTrail(["🥰", "😘", "❤️"], 4, 6);
+						trail += "❤️❤️❤️";
 
-						let r = Math.random() > 0.3 ? randomInt(3, 5) : 0;
-						trail += genTrail(["🐻🤗"], 0, 4, r);
-						if (r > 0 && Math.random() > 0.2) {
+						let r = Math.random() < 0.7 ? randomInt(3, 5) : 0;
+						trail += genTrail(["🐻🤗"], 0, 5, r);
+						if (r > 0 && Math.random() < 0.8) {
 							trail += "🦴";
 							trail += genTrail(["💥"], 3, 5);
 						}
@@ -180,7 +246,7 @@
 					setTimeout(() => {
 						copy.innerHTML = "Copy";
 						copy.classList.remove("clicked");
-					}, 4000);
+					}, 3000);
 				});
 			}
 		</script>
