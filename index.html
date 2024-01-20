@@ -3,6 +3,8 @@
 	<head>
 		<title>おやすみなさい〜〜〜</title>
 
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Montserrat:wght@400&display=swap" rel="stylesheet">
@@ -57,18 +59,30 @@
 				flex-wrap: nowrap;
 				justify-content: center;
 				align-items: center;
-				column-gap: 1.5em;
+				column-gap: 3rem;
+			}
+
+			#reset {
+				font-size: 6em;
+			}
+
+			#copy {
+				transition: background-color 0.5s ease;
+			}
+
+			#copy.clicked {
+				background-color: green;
 			}
 
 			button {
 				background-color: #555;
-				border-radius: 0.2em;
+				border-radius: 0.2rem;
 				border: 0;
 				color: #f0f0f0;
 				font-family: 'Montserrat', sans-serif;
 				font-size: 2.5em;
-				padding: 0.5em 1.2em;
-				height: 2.5em;
+				padding: 2rem 3rem;
+				line-height: 2.5rem;
 			}
 
 			button:hover {
@@ -144,9 +158,30 @@
 				const msg = document.getElementById("msg");
 
 				setGoodNightMessage(generateGoodNightMessage(), msg);
+				
 				document.getElementById("reset").addEventListener("click", () => 
 					setGoodNightMessage(generateGoodNightMessage(), msg)
 				);
+
+				const copy = document.getElementById("copy");
+				copy.addEventListener("click", () => {
+					const msgStr = msg.textContent || msg.innerText;
+
+					const api = document.createElement("textarea");
+					api.value = msgStr;
+					document.body.appendChild(api);
+					api.select();
+					document.execCommand("copy");
+					document.body.removeChild(api);
+
+					copy.innerHTML = "Copied ✓";
+					copy.classList.add("clicked");
+
+					setTimeout(() => {
+						copy.innerHTML = "Copy";
+						copy.classList.remove("clicked");
+					}, 4000);
+				});
 			}
 		</script>
 	</head>
