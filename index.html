@@ -57,13 +57,17 @@
 				flex-wrap: nowrap;
 				justify-content: center;
 				align-items: center;
-				column-gap: 4rem;
+				column-gap: 6rem;
 			}
 
 			#reset {
-				font-size: 5.5em;
-		/*		height: 2em;
-				width: 2em;*/
+/*				font-size: 5.5em;*/
+				background-image: url("reload.svg");
+				background-size: 6.5rem;
+				background-position: center center;
+				background-repeat: no-repeat;
+				height: 13rem;
+				width: 13rem;
 			}
 
 			#copy {
@@ -97,7 +101,7 @@
 			}
 
 			button:active {
-				transform: scale(1.05);
+				transform: scale(1.1);
 			}
 		</style>
 
@@ -261,7 +265,7 @@
 			<p id="msg"></p>
 
 			<div id="nav">
-				<button type="button" id="reset">⟳</button>
+				<button type="button" id="reset"></button>
 				<button type="button" id="copy">Copy</button>
 			</div>
 		</div>
