@@ -230,16 +230,17 @@
 			}
 
 			function main() {
+				const activator = window.ontouchstart ? "touchstart" : "click";
 				const msg = document.getElementById("msg");
 
 				setGoodNightMessage(generateGoodNightMessage(), msg);
 				
-				document.getElementById("reset").addEventListener("click", () => 
+				document.getElementById("reset").addEventListener(activator, () => 
 					setGoodNightMessage(generateGoodNightMessage(), msg)
 				);
 
 				const copy = document.getElementById("copy");
-				copy.addEventListener("click", () => {
+				copy.addEventListener(activator, () => {
 					const msgStr = msg.textContent || msg.innerText;
 
 					const api = document.createElement("textarea");
