@@ -1,43 +1,48 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<!-- This will be my most cringe project lmao -->
 		<title>おやすみなさい〜〜〜</title>
 
+		<!-- Cute Japanese font and button font -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Montserrat:wght@400&display=swap" rel="stylesheet">
 
+		<!-- Corny icons for a corny page :P -->
 		<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 		<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 		<link rel="icon" type="image/x-icon" href="favicon.ico">
 		<link rel="manifest" href="site.webmanifest">
 
+		<!-- Slick styles for sexy message delivery -->
 		<style>
+			/* Standard issue CSS to ensure that borders, padding, and margin behaves as it should have been defined in the first place. */
 			* {
 				box-sizing: border-box;
-
-				font-family: "Kosugi Maru", sans-serif;
-				font-weight: 400;
-				font-style: normal;
 			}
 
+			/* Standard issue CSS to ensure that all margin and padding definitions in the main body behave as expected. */
 			html, body {
 				margin: 0;
 				padding: 0;
 			}
 
+			/* Why this is not already defined like this is beyond me. */
 			body {
 				height: 100vh;
 				width: 100vw;
 			}
 
+			/* Main container for all output messages and buttons and whatever else is added later. */
 			#oyasumi {
 				height: 100%;
 				width: 100%;
 
 				background-color: #0e0e0e;
 
+				/* Each successive item is centered in a column in a top-down fashion. */
 				display: flex;
 				flex-direction: column;
 				flex-wrap: nowrap;
@@ -46,12 +51,31 @@
 				row-gap: 5rem;
 			}
 
+			/* Main container for the good night message. */
 			#msg {
+				font-family: "Kosugi Maru", sans-serif;
+				font-weight: 400;
+				font-style: normal;
 				color: #f0f0f0;
 				font-size: 3em;
 				text-align: center;
+
+				/* Things get cluttered on a small display */
+				max-width: 80%;
+
+				/* Cute little animation to pop in in conjunction with the .show class */
+				opacity: 0;
+				transform: translateY(0.75em);
+				transition: opacity 0.2s ease, transform 0.2s ease;
 			}
 
+			/* The big reveal of the good night message. */
+			#msg.show {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			/* Main container for buttons */
 			#nav {
 				display: flex;
 				flex-direction: row;
@@ -61,24 +85,49 @@
 				column-gap: 5rem;
 			}
 
+			/* The reset button went through much pain to finally arrive at this */
 			#reset {
-/*				font-size: 5.5em;*/
 				background-image: url("reload.svg");
 				background-size: 5rem;
 				background-position: center center;
 				background-repeat: no-repeat;
+
 				height: 10rem;
 				width: 10rem;
 			}
 
+			/* Making the visual cue less jarring to see pop into view */
 			#copy {
 				transition: background-color 0.5s ease;
 			}
 
+			/* A big visual cue that the copy button worked */
 			#copy.clicked {
 				background-color: green;
 			}
 
+			/* Since the "Copy" text has fewer chars than "Copied ✓", it's removed from the containing button so that
+			it doesn't resize when the copied message is faded in and this one fades out */
+			#copymsg {
+				position: absolute;
+				opacity: 1;
+				transition: opacity 0.1s ease;
+			}
+
+			#copymsg.clicked {
+				opacity: 0;
+			}
+
+			#copiedmsg {
+				opacity: 0;
+				transition: opacity 0.1s ease;
+			}
+
+			#copiedmsg.clicked {
+				opacity: 1;
+			}
+
+			/* Some button styling */
 			button {
 				display: flex;
 				align-items: center;
@@ -94,6 +143,7 @@
 				user-select: none;
 				transition: transform 0.05s ease;
 
+				/* On Chrome mobile, tapping the button gives it a blue highlight that gets in the way of my CSS */
 				-webkit-tap-highlight-color: transparent;
 			}
 
@@ -107,74 +157,74 @@
 		</style>
 
 		<script type="text/javascript">
+			// Only execute code once the page has fully loaded. Helps avoid putting script in the footer
 			window.addEventListener("load", main);
 
-			/* 
-			 * modified from http://www.voidware.com/moon_phase.htm
-			 * https://gist.github.com/endel/dfe6bb2fbe679781948c
+			/**
+			 * Modified from http://www.voidware.com/moon_phase.htm
+			 * source: https://gist.github.com/endel/dfe6bb2fbe679781948c
+			 * 
+			 * Calculates the current Moon phase and returns a number to indicate the position.
+			 * 
+			 * 0 => New Moon
+			 * 1 => Waxing Crescent Moon
+			 * 2 => Quarter Moon
+			 * 3 => Waxing Gibbous Moon
+			 * 4 => Full Moon
+			 * 5 => Waning Gibbous Moon
+			 * 6 => Last Quarter Moon
+			 * 7 => Waning Crescent Moon
 			 */
 			function getMoonPhase(year, month, day) {
-				var c = e = jd = b = 0;
+				let c = e = jd = b = 0;
 
 				if (month < 3) {
 					year--;
 					month += 12;
 				}
 
-				++month;
+				month++;
 
 				c = 365.25 * year;
-
 				e = 30.6 * month;
 
 				jd = c + e + day - 694039.09; //jd is total days elapsed
-
 				jd /= 29.5305882; //divide by the moon cycle
 
 				b = parseInt(jd); //int(jd) -> b, take integer part of jd
-
 				jd -= b; //subtract integer part to leave fractional part of original jd
-
 				b = Math.round(jd * 8); //scale fraction from 0-8 and round
 
-				if (b >= 8 ) {
-					b = 0; //0 and 8 are the same so turn 8 into 0
-				}
-
-				// 0 => New Moon
-				// 1 => Waxing Crescent Moon
-				// 2 => Quarter Moon
-				// 3 => Waxing Gibbous Moon
-				// 4 => Full Moon
-				// 5 => Waning Gibbous Moon
-				// 6 => Last Quarter Moon
-				// 7 => Waning Crescent Moon
-
-				return b;
+				return b % 8;
 			}
 
-			function randomInt(min, max) {
-				const r = Math.random();
-				return Math.floor((1 - r) * min + r * (max + 1));
+			/**
+			 * Generates a random integer from min to max, inclusive.
+			 */
+			function randInt(min, max) {
+				return Math.floor(Math.random() * (max - min + 1) + min);
 			}
 
-			function generateGoodNightMessage() {
+			/**
+			 * Generates the good night message string that is output to the view.
+			 * 
+			 * unlockables - An Array of emojis that are available for use beside the ones defined in this function.
+			 */
+			function generateGoodNightMessage(unlockables = []) {
+				const u = Math.random;
+
+				// The message is generated in parts, and each part is called and concatenated in sequence.
 				const composition = [
 					() => "おやすみ", // head
 
-					() => {
-						return Math.random() < 0.5 ? "なさい" : "";
-					}, // suffix
+					() => u() < 0.5 ? "なさい" : "", // suffix
+
+					() => "〜".repeat(randInt(1, 5)), // emotion
+
+					() => "✨🚀👩‍🚀", // head emoji
 
 					() => {
-						return "〜".repeat(randomInt(1, 5));
-					}, // emotion
-
-					() => {
-						return "✨🚀👩‍🚀";
-					}, // main emoji
-
-					() => {
+						// Get the current year, month, and day
 						const time = new Date();
 						const year = time.getFullYear();
 						const month = time.getMonth() + 1;
@@ -182,36 +232,60 @@
 
 						const PHASE = getMoonPhase(year, month, day);
 						if (PHASE === 4)
-							return "✨🌕✨";
+							return "✨🌕✨"; // Always show the full moon <3
 
-						else if (Math.random() < 0.25)
-							return ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"][PHASE];
-
-						return "";
+						// Only show the current phase about a quarter of the time..
+						return u() < 0.25 ? ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"][PHASE] : "";
 					}, // moon phase emoji
 
-					() => {
-						return Math.random() < 0.05 ? "☄️" : "";
-					}, // special head emoji
+					() => u() < 0.05 ? "☄️" : "", // special head emoji
 
 					() => {
-						const genTrail = (em, min, max, rand = false) => {
-							let g = "";
-							em.forEach(emoji => g += emoji.repeat(rand === false ? randomInt(min, max) : rand));
-							return g;
+						/**
+						 * Helper function for generating trailing emoji.
+						 * em - Array of emojis that need to be trailed
+						 * min - The minimum length of the trail
+						 * max - The maximum length of the trail
+						 * n - A Number if the trail must be exactly n emojis long, or not a number otherwise
+						 * s - An array of emojis that can be sprinkled into the trail. The trail length grows in this
+						 *     case.
+						 * p - The probability that a sprinkle emoji will be added.
+						 */
+						const genTrail = (em, min, max, n = null, s = [""], p = 0.15) => {
+							if (n === 0)
+								return "";
+
+							let t = "";
+							em.forEach(emoji => {
+								const c = typeof n === "number" ? n : randInt(min, max);
+								for (let i = 0; i < c; i++) {
+									// An emoji is sprinkled in from Array s with p probability
+									t += emoji + (u() < p ? s[Math.floor(u() * s.length)] : "");
+								}
+							});
+							return t;
 						}
 
+						// Final trail output
 						let trail = "";
-						trail += genTrail(["🥰", "😘", "❤️"], 4, 6);
-						trail += "❤️❤️❤️";
 
-						let r = Math.random() < 0.7 ? randomInt(3, 5) : 0;
-						trail += genTrail(["🐻🤗"], 0, 5, r);
-						if (r > 0 && Math.random() < 0.8) {
+						// First wave. Can't get enough love honestly.
+						trail += genTrail(["🥰", "😘"], 4, 6, null, ["❤️", "😍", "💋", "😋"]);
+						trail += genTrail(["❤️"], 6, 9);
+
+						// Don't always include the bear hugs, but when I do, they're tight
+						let n = u() < 0.7 ? randInt(3, 5) : 0;
+						trail += genTrail(["🐻🤗"], 3, 5, n, ["🐯"]); // with some tiger bites
+						if (n > 0 && u() < 0.8) {
+							// Sometimes the hugs crush your bones
 							trail += "🦴";
 							trail += genTrail(["💥"], 3, 5);
+
+							// And even rarer... blow your mind!
+							trail += u() < 0.1 ? "🤯😵🤪" : "";
 						}
 
+						// Can't forget the trailing tiger bites!
 						trail += genTrail(["🐯"], 0, 4);
 
 						return trail;
@@ -222,27 +296,59 @@
 					} // closing emojis
 				];
 
+				// Concatenate the final result
 				return composition.reduce((msg, gen) => msg += gen(), "");
 			}
 
-			function setGoodNightMessage(str, p) {
-				p.innerHTML = str;
+			/**
+			 * Takes a generated good night message and sticks it into the provided DOM element. The first time this
+			 * function is called should be without a delay.
+			 * 
+			 * str - The good night message string
+			 * e - The DOM element to attach the message to.
+			 * init - Whether or not this is the first time the function is called.
+			 */
+			function setGoodNightMessage(str, e, init = false) {
+				if (init) {
+					e.innerHTML = str;
+					e.classList.add("show");
+					return;
+				}
+
+				e.classList.remove("show");
+				setTimeout(() => {
+					e.innerHTML = str;
+					e.classList.add("show");
+				}, 250);
 			}
 
+			/**
+			 * Executes once the DOM has successfully loaded.
+			 */
 			function main() {
+				// Determine if touch is available, and if so, use that instead of click events
 				const activator = window.ontouchstart ? "touchstart" : "click";
+
+				// DOM element that holds the good night message
 				const msg = document.getElementById("msg");
 
-				setGoodNightMessage(generateGoodNightMessage(), msg);
+				// Set the initial good night message that will display on page load
+				setGoodNightMessage(generateGoodNightMessage(), msg, true);
 				
+				// Makes the reset button generate a new good night message if the one on screen isn't up to par
 				document.getElementById("reset").addEventListener(activator, () => 
 					setGoodNightMessage(generateGoodNightMessage(), msg)
 				);
 
+				// Set up the copy button and the message functionality to provide feedback on success
 				const copy = document.getElementById("copy");
+				const copymsg = document.getElementById("copymsg");
+				const copiedmsg = document.getElementById("copiedmsg");
 				copy.addEventListener(activator, () => {
+					// Get the good night message
 					const msgStr = msg.textContent || msg.innerText;
 
+					// Use the available API to copy the message to the device clipboard
 					const api = document.createElement("textarea");
 					api.value = msgStr;
 					document.body.appendChild(api);
@@ -250,12 +356,12 @@
 					document.execCommand("copy");
 					document.body.removeChild(api);
 
-					copy.innerHTML = "Copied ✓";
-					copy.classList.add("clicked");
+					// Allow predefined CSS to handle animations and such
+					[copy, copymsg, copiedmsg].forEach(e => e.classList.add("clicked"));
 
+					// Return to the original state after a few seconds to reset in case of another copy on the same page load
 					setTimeout(() => {
-						copy.innerHTML = "Copy";
-						copy.classList.remove("clicked");
+						[copy, copymsg, copiedmsg].forEach(e => e.classList.remove("clicked"));
 					}, 3000);
 				});
 			}
@@ -263,13 +369,23 @@
 	</head>
 
 	<body>
+		<!-- Main container for all of the content -->
 		<div id="oyasumi">
-			<p id="msg"></p>
+			<!-- Good night message container -->
+			<div id="msg"></div>
 
+			<!-- Button container -->
 			<div id="nav">
+				<!-- Resets the good night message -->
 				<button type="button" id="reset"></button>
-				<button type="button" id="copy">Copy</button>
+
+				<!-- Copies the good night message to the clipboard -->
+				<button type="button" id="copy"><span id="copymsg">Copy</span><span id="copiedmsg">Copied ✓</span></button>
 			</div>
 		</div>
+
+		<footer>
+			<!-- Con mucho amor, tiguesito <3 -->
+		</footer>
 	</body>
 </html>
