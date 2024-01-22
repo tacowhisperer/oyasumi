@@ -210,12 +210,103 @@
 			}
 
 			/**
+			 * Returns the day number of the nth occurrence of a day of the week of the specified
+			 * month of the specified year.
+			 * 
+			 * year - The year searched for.
+			 * month - The month searched for. (0-based index)
+			 * targetDay - The day of the week (1-based index, 1 = Sunday, 2 = Monday, ...)
+			 * nthOccurrence - The nth occurrence of targetDay of the month of the year.
+			 */
+			function getNthDayOfMonth(year, month, targetDay, nthOccurrence) {
+				const date = new Date(year, month, 1);
+				const targetDayIndex = (targetDay + 6) % 7; // Adjust to JavaScript's Sunday-based index
+
+				let count = 0;
+				while (date.getMonth() === month) {
+					if (date.getDay() === targetDayIndex) {
+						count++;
+						if (count === nthOccurrence) {
+							return date.getDate();
+						}
+					}
+					date.setDate(date.getDate() + 1);
+				}
+
+				return 0; // Return 0 if the nth occurrence doesn't exist in the given month
+			}
+
+			/**
+			 * Converts a number or number string into its corresponding emoji.
+			 */
+			function numToEmoji(n) {
+				// Quick conversion if available
+				switch (n) {
+					case ".":
+						return "*️⃣";
+					case "0":
+					case 0:
+						return "0️⃣";
+					case "1":
+					case 1:
+						return "1️⃣";
+					case "2":
+					case 2:
+						return "2️⃣";
+					case "3":
+					case 3:
+						return "3️⃣";
+					case "4":
+					case 4:
+						return "4️⃣";
+					case "5":
+					case 5:
+						return "5️⃣";
+					case "6":
+					case 6:
+						return "6️⃣";
+					case "7":
+					case 7:
+						return "7️⃣";
+					case "8":
+					case 8:
+						return "8️⃣";
+					case "9":
+					case 9:
+						return "9️⃣";
+					default:
+						break;
+				}
+
+				// Recurse down otherwise
+				if (typeof n === "string") {
+					if (n.length === 0)
+						return "";
+					
+					return numToEmoji(n.charAt(0)) + numToEmoji(n.substring(1));
+				}
+
+				else if (typeof n === "number") {
+					return numToEmoji(String(n));
+				}
+
+				// No matching emoji was found
+				return "";
+			}
+
+			/**
 			 * Generates the good night message string that is output to the view.
 			 * 
 			 * unlockables - An Array of emojis that are available for use beside the ones defined in this function.
 			 */
 			function generateGoodNightMessage(unlockables = []) {
 				const u = Math.random;
+
+				// Get the current year, month, and day
+				const time = new Date();
+				const year = time.getFullYear();
+				const month = time.getMonth() + 1;
+				const day = time.getDate();
 
 				// The message is generated in parts, and each part is called and concatenated in sequence.
 				const composition = [
@@ -228,12 +319,6 @@
 					() => "✨🚀👩‍🚀", // head emoji
 
 					() => {
-						// Get the current year, month, and day
-						const time = new Date();
-						const year = time.getFullYear();
-						const month = time.getMonth() + 1;
-						const day = time.getDate();
-
 						const PHASE = getMoonPhase(year, month, day);
 						if (PHASE === 4)
 							return "✨🌕✨"; // Always show the full moon <3
@@ -243,6 +328,66 @@
 					}, // moon phase emoji
 
 					() => u() < 0.05 ? "☄️" : "", // special head emoji
+
+					() => {
+						const m = month - 1;
+
+						const variableHolidays = {
+							10: { // november
+								'thanksgiving': getNthDayOfMonth(year, month, 5, 4)
+							}
+						};
+
+						const calendar = [
+							{ // january
+								1: () => `🎆🎆${numToEmoji(year)}🎆🎆🎊🥳🥳🎉🎉🎉🥂🎊`, // new year
+								6: () => `🤴🤴🤴🐪🪙🥯🥯👶` // día de reyes
+							},
+							{ // february
+								14: () => `👼🏹✨💖💖💖💑💖💖💖✨🐣❤️🐥`, // valentine's day
+								29: () => `☀️${numToEmoji(29)}🎈🌎☝️🤓` // leap year day!
+							},
+							{ // march
+								17: () => `🌈🍀🍀🍀🎩🕺🍻🎉🎶` // St. Patrick's day
+							},
+							{}, // april, so sad, nothing significant for my tiguesita and I :(
+							{ // may
+								5: () => `🇲🇽🇲🇽🇲🇽🎉🌮🍹🕺💃🎺🎺🎺🎶` // 5 de mayo
+							},
+							{}, // june, only the beginning of our friendship and some shared anime ;P
+							{ // july
+								4: () => `🇺🇸🇺🇸🇺🇸🗽🎆🎆🎆🤘WTF IS A KILOMETERRRRRRRRRRRR🦅🦅🦅🦅🤘🔫🔫🔫🎆🎆🎆🎇🍔🌽🚜🛻` // AMERICA, F YEAH! CAAAWWWWW!!!!
+							},
+							{ // august
+								17: () => `🥳🥳🥳🎉🎉🥹❤️🎂${numToEmoji(year - 2000)}🍰🎁🎈🎈🎊`, // Her birthday :) <3
+								21: () => `✨🌙🌌🌊🌊🌅🏖️💑🥂🌹🌹❤️❤️❤️❤️` // our anniversary
+							},
+							{ // september
+								16: () => `🇲🇽🇲🇽🇲🇽💪💪💪🎉🌮🍹🕺💃🎺🎺🎺🎶` // 16 de septiembre
+							},
+							{ // october
+								10: () => `👴${numToEmoji(year - 1994)}🤯😵😵😵😵🤪💀`, // My birthday >_<
+								31: () => `🍂🦇👹🔪🔪🎃🎃🎃👻🍭🕷️🕸️🍂` // halloween
+							},
+							{ // november
+								'thanksgiving': () => `🍂🍁🍠🦃🦃🦃🍽️🍷🌽🥔🍞🥧🍁🍂`, // Gobble gobble!
+							},
+							{ // december
+								25: () => `❄️☃️🎄🎅❤️🤶🎁🎁🎁🔔🕯️🌟🦌🍪🥛☃️❄️` // Christmas!!!! :D
+							}
+						];
+
+						// Map variable date holidays to their actual day
+						Object.keys(variableHolidays).forEach(m => {
+							// Map each dynamic holiday to its actual day so that the final line works as expected.
+							Object.keys(variableHolidays[m]).forEach(h => {
+								const hDay = variableHolidays[m][h];
+								calendar[m][hDay] = calendar[m][h];
+							});
+						});
+
+						return calendar[m].hasOwnProperty(day) ? calendar[m][day]() : "";
+					}, // special dates
 
 					() => {
 						/**
