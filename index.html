@@ -4,6 +4,9 @@
 		<!-- This will be my most cringe project lmao -->
 		<title>おやすみなさい〜〜〜</title>
 
+		<!-- Making it pretty on mobile too, like my tiguesita <3 -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
 		<!-- Cute Japanese font and button font -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +51,7 @@
 				flex-wrap: nowrap;
 				justify-content: center;
 				align-items: center;
-				row-gap: 5rem;
+				row-gap: 5vw;
 			}
 
 			/* Main container for the good night message. */
@@ -57,7 +60,7 @@
 				font-weight: 400;
 				font-style: normal;
 				color: #f0f0f0;
-				font-size: 3em;
+				font-size: max(3vw, 3vh);
 				text-align: center;
 
 				/* Things get cluttered on a small display */
@@ -79,21 +82,21 @@
 			#nav {
 				display: flex;
 				flex-direction: row;
-				flex-wrap: nowrap;
+				flex-wrap: wrap;
 				justify-content: center;
 				align-items: center;
-				column-gap: 5rem;
+				column-gap: 5vw;
 			}
 
 			/* The reset button went through much pain to finally arrive at this */
 			#reset {
 				background-image: url("reload.svg");
-				background-size: 5rem;
+				background-size: 5vw;
 				background-position: center center;
 				background-repeat: no-repeat;
 
-				height: 10rem;
-				width: 10rem;
+				height: 10vw;
+				width: 10vw;
 			}
 
 			/* Making the visual cue less jarring to see pop into view */
@@ -128,18 +131,18 @@
 			}
 
 			/* Some button styling */
-			button {
+			.button {
 				display: flex;
 				align-items: center;
 				justify-content: center;
 
 				background-color: #555;
-				border-radius: 0.75rem;
+				border-radius: 0.75vw;
 				border: 0;
 				color: #f0f0f0;
 				font-family: 'Montserrat', sans-serif;
-				font-size: 4em;
-				padding: 2.5rem 3rem;
+				font-size: 4vw;
+				padding: 2.5vw 3vw;
 				user-select: none;
 				transition: transform 0.05s ease;
 
@@ -147,18 +150,26 @@
 				-webkit-tap-highlight-color: transparent;
 			}
 
-			button:hover {
+			.button:hover {
 				cursor: pointer;
 			}
 
-			button:active {
+			.button:active {
 				transform: scale(1.15);
 			}
 		</style>
 
+		<!-- And a dash of JS magic to tie it all together~~~ -->
 		<script type="text/javascript">
 			// Only execute code once the page has fully loaded. Helps avoid putting script in the footer
 			window.addEventListener("load", main);
+
+			/**
+			 * Generates a random integer from min to max, inclusive.
+			 */
+			function randInt(min, max) {
+				return Math.floor(Math.random() * (max - min + 1) + min);
+			}
 
 			/**
 			 * Modified from http://www.voidware.com/moon_phase.htm
@@ -196,13 +207,6 @@
 				b = Math.round(jd * 8); //scale fraction from 0-8 and round
 
 				return b % 8;
-			}
-
-			/**
-			 * Generates a random integer from min to max, inclusive.
-			 */
-			function randInt(min, max) {
-				return Math.floor(Math.random() * (max - min + 1) + min);
 			}
 
 			/**
@@ -291,9 +295,7 @@
 						return trail;
 					}, // trailing emojis
 
-					() => {
-						return "❤️🐥";
-					} // closing emojis
+					() => "❤️🐥" // closing emojis
 				];
 
 				// Concatenate the final result
@@ -377,10 +379,13 @@
 			<!-- Button container -->
 			<div id="nav">
 				<!-- Resets the good night message -->
-				<button type="button" id="reset"></button>
+				<div class="button" type="button" id="reset"></div>
 
 				<!-- Copies the good night message to the clipboard -->
-				<button type="button" id="copy"><span id="copymsg">Copy</span><span id="copiedmsg">Copied ✓</span></button>
+				<div class="button" type="button" id="copy"><span id="copymsg">Copy</span><span id="copiedmsg">Copied ✓</span></div>
+
+				<!-- Toggle for special emojis -->
+				<!-- <div class="button"></div> -->
 			</div>
 		</div>
 
