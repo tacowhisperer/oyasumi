@@ -175,7 +175,6 @@
 				height: max(4vw, 4vh);
 				background-color: #ddd;
 				border-radius: max(4vw, 4vh);
-/*				position: absolute;*/
 				top: 0;
 				left: 0;
 				transition: background-color 0.2s ease;
@@ -579,8 +578,9 @@
 				reset.style.display = seedIsFixed ? 'none' : 'block';
 
 				const random = document.getElementById("random");
+				const isRandomInput = random.children[0].children[0];
+				isRandomInput.checked = !seedIsFixed; // The button says "Random", so logic is backwards from here
 				random.addEventListener(activator, () => {
-					const input = random.children[0].children[0];
 					seedIsFixed = !seedIsFixed;
 
 					// Update the RNG and the reset button display based on whether the seed is fixed
@@ -588,7 +588,7 @@
 					reset.style.display = seedIsFixed ? 'none' : 'block';
 					setGoodNightMessage(generateGoodNightMessage(), msg);
 
-					input.checked = !seedIsFixed; // The button says "Random", so logic is backwards from here
+					isRandomInput.checked = !seedIsFixed; // The button says "Random", so logic is backwards from here
 					reset.style.display = seedIsFixed ? 'none' : 'block';
 					localStorage.setItem(FIXED_SEED, JSON.stringify(seedIsFixed));
 				});
