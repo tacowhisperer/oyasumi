@@ -86,6 +86,8 @@
 				justify-content: center;
 				align-items: center;
 				column-gap: max(5vw, 4vh);
+				row-gap: max(3vw, 2vh);
+				max-width: 80%;
 			}
 
 			/* The reset button went through much pain to finally arrive at this */
@@ -106,7 +108,7 @@
 
 			/* A big visual cue that the copy button worked */
 			#copy.clicked {
-				background-color: green;
+				background-color: #0066b2;
 			}
 
 			/* Since the "Copy" text has fewer chars than "Copied ✓", it's removed from the containing button so that
@@ -157,6 +159,46 @@
 			.button:active {
 				transform: scale(1.15);
 			}
+
+			/* Toggle CSS */
+			.toggle-container {
+				display: inline-block;
+				position: relative;
+			}
+
+			.toggle-input {
+				display: none;
+			}
+
+			.toggle-track {
+				width: max(8vw, 8vh);
+				height: max(4vw, 4vh);
+				background-color: #ddd;
+				border-radius: max(4vw, 4vh);
+/*				position: absolute;*/
+				top: 0;
+				left: 0;
+				transition: background-color 0.2s ease;
+			}
+
+			.toggle-thumb {
+				width: max(4vw, 4vh);
+				height: max(4vw, 4vh);
+				background-color: #fff;
+				border-radius: 50%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				transition: transform 0.2s ease;
+			}
+
+			.toggle-input:checked + .toggle-track {
+				background-color: #7CB9E8;
+			}
+
+			.toggle-input:checked + .toggle-track .toggle-thumb {
+				transform: translateX(max(4vw, 4vh));
+			}
 		</style>
 
 		<!-- And a dash of JS magic to tie it all together~~~ -->
@@ -164,11 +206,26 @@
 			// Only execute code once the page has fully loaded. Helps avoid putting script in the footer
 			window.addEventListener("load", main);
 
+			// Alias for random number generation
+			let u = lgcRNG(Date.now());
+
+			/**
+			 * LGC algorithm to be able to seed the RNG.
+			 */
+			function lgcRNG(seed) {
+				let state = seed % 2147483647 || 1;
+
+				return function () {
+					state = (state * 16807) % 2147483647;
+					return (state - 1) / 2147483646;
+				};
+			}
+
 			/**
 			 * Generates a random integer from min to max, inclusive.
 			 */
 			function randInt(min, max) {
-				return Math.floor(Math.random() * (max - min + 1) + min);
+				return Math.floor(u() * (max - min + 1) + min);
 			}
 
 			/**
@@ -300,8 +357,6 @@
 			 * unlockables - An Array of emojis that are available for use beside the ones defined in this function.
 			 */
 			function generateGoodNightMessage(unlockables = []) {
-				const u = Math.random;
-
 				// Get the current year, month, and day
 				const time = new Date();
 				const year = time.getFullYear();
@@ -478,12 +533,10 @@
 
 				// DOM element that holds the good night message
 				const msg = document.getElementById("msg");
-
-				// Set the initial good night message that will display on page load
-				setGoodNightMessage(generateGoodNightMessage(), msg, true);
 				
 				// Makes the reset button generate a new good night message if the one on screen isn't up to par
-				document.getElementById("reset").addEventListener(activator, () => 
+				const reset = document.getElementById("reset");
+				reset.addEventListener(activator, () => 
 					setGoodNightMessage(generateGoodNightMessage(), msg)
 				);
 
@@ -511,6 +564,37 @@
 						[copy, copymsg, copiedmsg].forEach(e => e.classList.remove("clicked"));
 					}, 3000);
 				});
+
+				// Get today's date in milliseconds
+				const timeNow = new Date();
+				const today = new Date(timeNow.getFullYear(), timeNow.getMonth(), timeNow.getDate()).getTime();
+
+				// Set up the random button functionality	
+				const FIXED_SEED = 'use-daily-clock';
+				let seedIsFixed = localStorage.getItem(FIXED_SEED);
+				seedIsFixed = seedIsFixed === null ? true : JSON.parse(seedIsFixed);
+
+				// Update the RNG and the reset button display based on whether the seed is fixed
+				u = seedIsFixed ? () => lgcRNG(today)() : lgcRNG(Date.now());
+				reset.style.display = seedIsFixed ? 'none' : 'block';
+
+				const random = document.getElementById("random");
+				random.addEventListener(activator, () => {
+					const input = random.children[0].children[0];
+					seedIsFixed = !seedIsFixed;
+
+					// Update the RNG and the reset button display based on whether the seed is fixed
+					u = seedIsFixed ? () => lgcRNG(today)() : lgcRNG(Date.now());
+					reset.style.display = seedIsFixed ? 'none' : 'block';
+					setGoodNightMessage(generateGoodNightMessage(), msg);
+
+					input.checked = !seedIsFixed; // The button says "Random", so logic is backwards from here
+					reset.style.display = seedIsFixed ? 'none' : 'block';
+					localStorage.setItem(FIXED_SEED, JSON.stringify(seedIsFixed));
+				});
+
+				// Set the initial good night message that will display on page load after all settings have been loaded
+				setGoodNightMessage(generateGoodNightMessage(), msg, true);
 			}
 		</script>
 	</head>
@@ -529,8 +613,17 @@
 				<!-- Copies the good night message to the clipboard -->
 				<div class="button" type="button" id="copy"><span id="copymsg">Copy</span><span id="copiedmsg">Copied ✓</span></div>
 
-				<!-- Toggle for special emojis -->
-				<!-- <div class="button"></div> -->
+				<!-- Toggle unlocking regenerable good night messages -->
+				<div class="button" id="random">
+					✨Random✨
+					&nbsp;
+					<div class="toggle-container">
+						<input type="checkbox" class="toggle-input">
+						<div class="toggle-track">
+							<div class="toggle-thumb"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 
