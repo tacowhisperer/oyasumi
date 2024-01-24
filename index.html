@@ -589,7 +589,6 @@
 					setGoodNightMessage(generateGoodNightMessage(), msg);
 
 					isRandomInput.checked = !seedIsFixed; // The button says "Random", so logic is backwards from here
-					reset.style.display = seedIsFixed ? 'none' : 'block';
 					localStorage.setItem(FIXED_SEED, JSON.stringify(seedIsFixed));
 				});
 
@@ -615,7 +614,7 @@
 
 				<!-- Toggle unlocking regenerable good night messages -->
 				<div class="button" id="random">
-					✨Random✨
+					✨Random
 					&nbsp;
 					<div class="toggle-container">
 						<input type="checkbox" class="toggle-input">
@@ -623,6 +622,7 @@
 							<div class="toggle-thumb"></div>
 						</div>
 					</div>
+					✨
 				</div>
 			</div>
 		</div>
